@@ -15,7 +15,8 @@
   import {SignupSchema} from "../schemas/indexSch";
   import axios from "axios";
   import Swal from "sweetalert2";
-
+import DrawerAppBar from "../components/AppBar";
+import { useNavigate } from "react-router-dom";
   const initialValues = {
     email: "",
     password: "",
@@ -23,6 +24,8 @@
 
 
   const Login = () => {
+    const navigateuser = useNavigate();
+
     const { values, errors, handleBlur, handleChange, handleSubmit, touched } =
     useFormik({
       initialValues,
@@ -39,12 +42,16 @@
           );
           console.log("Response:", response.data);
           if (response.status === 200) {
+            const userToken = response.data.token;
+            localStorage.setItem('userToken', JSON.stringify(userToken))
+            localStorage.setItem('userInfo', JSON.stringify(response.data.userComeWithoutPass))
             Swal.fire({
               title: "Success",
               text: "Login successful",
               icon: "success",
             });
             action.resetForm();
+            navigateuser('/chat')
           } else {
             if (response.status === 404) {
               Swal.fire({
@@ -78,6 +85,7 @@
     });
     return (
       <div className="container">
+        <DrawerAppBar/>
         <MDBContainer fluid className="p-3 my-5 h-custom">
           <MDBRow>
             <MDBCol col="10" md="6">
@@ -90,7 +98,7 @@
 
             <MDBCol col="4" md="6">
               <div className="d-flex flex-row align-items-center justify-content-center">
-                <p className="lead fw-normal mb-0 me-3">Sign in with</p>
+                <p className="lead fw-normal mb-0 me-3">Login in with</p>
 
                 <MDBBtn floating size="md" tag="a" className="me-2">
                   <MDBIcon fab icon="facebook-f" />
@@ -146,7 +154,7 @@
                 ) : null}
               </div>
 
-              <div className="d-flex justify-content-between mb-4">
+              <div className="d-flex justify-content-between mt-3 pt-2 w-75">
                 <MDBCheckbox
                   name="flexCheck"
                   value=""
@@ -156,7 +164,7 @@
                 <a href="!#">Forgot password?</a>
               </div>
 
-              <div className="text-center text-md-start mt-4 pt-2">
+              <div className=" text-md-start mt-4 pt-2">
                 <MDBBtn onClick={handleSubmit} className="w-25" type="submit">
                   Login
                 </MDBBtn>
